@@ -1,18 +1,52 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
+import { HistoryItem } from './HistoryDisplay';
+import HistoryDisplay from './HistoryDisplay';
 import './AIImageDetector.css';
 
 export default function AIImageDetector() {
   const [image, setImage] = useState<string | null>(null);
   const [percentage, setPercentage] = useState<number | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('imageHistory');
+    if (savedHistory) {
+      const parsedHistory = JSON.parse(savedHistory)
+      setHistory(parsedHistory)
+    }
+  }, []);
+
+  const renderPercentage = (file: File | undefined) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newImage = e.target?.result as string;
+        setImage(newImage);
+        //? Porcentaje aleatorio
+        const newPercentage = Math.floor(Math.random() * 101);
+        //! Aquí se renderiza la probabilidad de que la imagen sea real
+        setPercentage(newPercentage);
+
+        const newHistoryItem: HistoryItem = {
+          id: Date.now().toString(),
+          image: newImage,
+          percentage: newPercentage,
+          timestamp: new Date().toISOString()
+        }
+        const updatedHistory = [newHistoryItem, ...history].slice(0, 10);
+        setHistory(updatedHistory);
+        localStorage.setItem('imageHistory', JSON.stringify(updatedHistory));
+      }
+      reader.readAsDataURL(file);
+    }
+  }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -33,23 +67,16 @@ export default function AIImageDetector() {
     fileInputRef.current?.click();
   }
 
-  const renderPercentage = (file: File | undefined) => {
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImage(e.target?.result as string);
-        //! Aquí se renderiza la probabilidad de que la imagen sea real
-        setPercentage(Math.floor(Math.random() * 101)); //? Porcentaje aleatorio
-      }
-      reader.readAsDataURL(file);
-    }
+  const handleSelectHistoryItem = (item: HistoryItem) => {
+    setImage(item.image);
+    setPercentage(item.percentage);
   }
 
   return (
     <Card className="ai-image-detector">
       <CardHeader>
         <CardTitle>
-          AI Image Detector
+          Is It True?
         </CardTitle>
         <CardDescription>
           Upload an image to check if it's AI-generated
@@ -86,14 +113,17 @@ export default function AIImageDetector() {
           />
         </div>
         {percentage !== null && (
-          <div className="truth-percentage">
-            <Label className="percentage-label">Truth Percentage</Label>
-            <Progress value={percentage} className="w-full" />
-            <p className="percentage-text">
+          <div className="results-display">
+            <h3 className="results-title">AI Detection Result</h3>
+            <div className="results-bar">
+              <div className="results-progress" style={{ width: `${percentage}%` }}></div>
+            </div>
+            <p className="results-text">
               This image is {percentage}% likely to be real (not AI-generated).
             </p>
           </div>
         )}
+        <HistoryDisplay history={history} onSelectHistoryItem={handleSelectHistoryItem} />
       </CardContent>
       <CardFooter>
         <Button className="footer-button" onClick={handleAreaClick}>
@@ -101,5 +131,5 @@ export default function AIImageDetector() {
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
