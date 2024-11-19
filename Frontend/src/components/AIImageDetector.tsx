@@ -106,61 +106,81 @@ export default function AIImageDetector() {
   return (
     <Card className="ai-image-detector">
       <CardHeader>
-        <CardTitle>
-          Is It True?
-        </CardTitle>
+        <CardTitle>AI Image Detector</CardTitle>
         <CardDescription>
-          Upload an image to check if it's AI-generated
+          Upload an image to determine if it's AI-generated.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div 
-          className="upload-area"
+        <div
+          className={`upload-area ${isLoading ? 'loading' : ''}`}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          onClick={handleAreaClick}
+          onClick={!isLoading ? handleAreaClick : undefined}
         >
-          {!image && (
+          {isLoading && (
+            <div className="loading-indicator">
+              <div className="spinner"></div>
+              <p>Analyzing image...</p>
+            </div>
+          )}
+          {!isLoading && !image && (
             <div className="upload-content">
               <Upload className="upload-icon" />
               <p className="upload-text">
-                <span className="upload-text-bold">Click to upload</span> or drag and drop
+                <span className="upload-text-bold">Click to upload</span> or drag and drop an image
               </p>
             </div>
           )}
-          {image && (
+          {!isLoading && image && (
             <div className="uploaded-image-container">
-              <img src={image} alt="Uploaded image" className="uploaded-image" />
+              <img
+                src={image}
+                alt="Uploaded image"
+                className="uploaded-image"
+              />
             </div>
           )}
-          <Input 
+          <Input
             ref={fileInputRef}
-            id="image-upload" 
-            type="file" 
-            className="hidden" 
-            onChange={handleImageUpload} 
-            accept="image/*" 
+            id="image-upload"
+            type="file"
+            className="hidden"
+            onChange={handleImageUpload}
+            accept="image/*"
             aria-label="Upload an image"
           />
         </div>
-        {percentage !== null && (
+        {!isLoading && percentage !== null && (
           <div className="results-display">
             <h3 className="results-title">AI Detection Result</h3>
             <div className="results-bar">
-              <div className="results-progress" style={{ width: `${percentage}%` }}></div>
+              <div
+                className="results-progress"
+                style={{ width: `${percentage}%` }}
+              ></div>
             </div>
             <p className="results-text">
               This image is {percentage}% likely to be real (not AI-generated).
             </p>
           </div>
         )}
-        <HistoryDisplay history={history} onSelectHistoryItem={handleSelectHistoryItem} />
+        {!isLoading && (
+          <HistoryDisplay
+            history={history}
+            onSelectHistoryItem={handleSelectHistoryItem}
+          />
+        )}
       </CardContent>
       <CardFooter>
-        <Button className="footer-button" onClick={handleAreaClick}>
-          {image ? "Analyze Another Image" : "Upload an Image"}
+        <Button
+          className="footer-button"
+          onClick={handleAreaClick}
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing..." : image ? "Analyze Another Image" : "Upload an Image"}
         </Button>
       </CardFooter>
     </Card>
-  );
+  );  
 }
