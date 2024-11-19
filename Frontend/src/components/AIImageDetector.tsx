@@ -14,6 +14,7 @@ export default function AIImageDetector() {
   const [percentage, setPercentage] = useState<number | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('imageHistory');
@@ -23,30 +24,60 @@ export default function AIImageDetector() {
     }
   }, []);
 
-  const renderPercentage = (file: File | undefined) => {
+  const analyzeImage = async (file: File): Promise<number | null> => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+  
+      // TODO: Cambiar servidor de ejemplo
+      const response = await fetch('http://server/analyze-image', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error('Could not analyze the image. Please try again.');
+      }
+  
+      //* Se puede usar otro formato para la respuesta
+      const data = await response.json();
+      return data.percentage;
+    } catch (error) {
+      console.error('Error:', error);
+      return null;
+    }
+  };
+
+  const renderPercentage = async (file: File | undefined) => {
     if (file) {
+      setIsLoading(true);
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const newImage = e.target?.result as string;
         setImage(newImage);
-        //? Porcentaje aleatorio
-        const newPercentage = Math.floor(Math.random() * 101);
-        //! Aquí se renderiza la probabilidad de que la imagen sea real
+  
+        const newPercentage = await analyzeImage(file);
+        if (newPercentage === null) {
+          alert('Could not analyze the image. Please try again.');
+          return;
+        }
+
         setPercentage(newPercentage);
+        setIsLoading(false);
 
         const newHistoryItem: HistoryItem = {
           id: Date.now().toString(),
           image: newImage,
           percentage: newPercentage,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        };
         const updatedHistory = [newHistoryItem, ...history].slice(0, 10);
         setHistory(updatedHistory);
         localStorage.setItem('imageHistory', JSON.stringify(updatedHistory));
-      }
+      };
       reader.readAsDataURL(file);
     }
-  }
+  };  
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
