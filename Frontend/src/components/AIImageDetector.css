@@ -19,10 +19,26 @@
   border: 2px dashed hsl(var(--border));
   border-radius: 0.5rem;
   cursor: pointer;
-  background-color: hsl(var(--muted));
+  background-color: hsl(var(--background));
   transition: background-color 0.3s ease;
   overflow: hidden;
   position: relative;
+}
+
+.upload-area.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  background-color: hsl(var(--background));
+  border: 2px dashed hsl(var(--border));
+  position: relative;
+}
+
+.dark .upload-area,
+.dark .upload-area.loading {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
 }
 
 .upload-area:hover {
@@ -117,7 +133,6 @@
   width: 100%;
   margin-top: 1rem;
 }
-
 .upload-area.loading {
   display: flex;
   justify-content: center;
