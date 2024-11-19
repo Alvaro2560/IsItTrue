@@ -3,6 +3,7 @@ import os
 from flask_cors import CORS
 from waitress import serve
 import logging
+from Modelo.predictFile import Predictor
 
 app = Flask(__name__)
 
@@ -25,8 +26,11 @@ def log_ip():
 CORS(app, resources = {r"/upload": {"origins": "*"}})
 
 # Ruta para almacenar las imágenes subidas
-UPLOAD_FOLDER = 'uploads'
+currentDir = os.path.dirname(__file__)
+UPLOAD_FOLDER = os.path.join(currentDir, 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+PREDICTOR = Predictor('model.h5', UPLOAD_FOLDER, 64)
+app.config['PREDICTOR'] = PREDICTOR
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -41,18 +45,18 @@ def upload_file():
   
   # Guardar el archivo
   if file:
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    file.save(file_path)
+    filePath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(filePath)
       
-    app.logger.info(f"Archivo subido y guardado: \"{file.filename}\" Tamaño: {os.path.getsize(file_path)} bytes")
+    app.logger.info(f"Archivo subido y guardado: \"{file.filename}\" Tamaño: {os.path.getsize(filePath)} bytes")
 
     # Incluir predicción TODO: Cambiar por la predicción real
-    result = 90 # model.predict(file_path)
+    result = app.config['PREDICTOR'].predict('real')[0]
 
-    os.remove(file_path)
-    return jsonify({'percentage': result}), 200 # Retornar probabilidad de que la imagen sea real
+    os.remove(filePath)
+    return jsonify({'percentage': f'{result * 100:.2f}'}), 200 # Retornar probabilidad de que la imagen sea real
 
 if __name__ == '__main__':
   # Ejecutar el servidor con Waitress
-  serve(app, host='0.0.0.0', port=8080)
+  serve(app, host = '0.0.0.0', port = 8080)
     
