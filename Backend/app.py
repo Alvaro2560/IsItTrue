@@ -47,10 +47,10 @@ def upload_file():
     app.logger.info(f"Archivo subido y guardado: \"{file.filename}\" Tamaño: {os.path.getsize(file_path)} bytes")
 
     # Incluir predicción TODO: Cambiar por la predicción real
-    result = 0.9 # model.predict(file_path)
+    result = 90 # model.predict(file_path)
 
     os.remove(file_path)
-    return jsonify({'percentage': result}), 200 # Retornar probabilidad de que la imagen sea generada por IA
+    return jsonify({'percentage': result}), 200 # Retornar probabilidad de que la imagen sea real
 
 if __name__ == '__main__':
   # Ejecutar el servidor con Waitress
