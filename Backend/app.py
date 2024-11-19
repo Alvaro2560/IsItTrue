@@ -50,7 +50,7 @@ def upload_file():
     result = 0.9 # model.predict(file_path)
 
     os.remove(file_path)
-    return jsonify({'iaprob': result}), 200
+    return jsonify({'percentage': result}), 200 # Retornar probabilidad de que la imagen sea generada por IA
 
 if __name__ == '__main__':
   # Ejecutar el servidor con Waitress
