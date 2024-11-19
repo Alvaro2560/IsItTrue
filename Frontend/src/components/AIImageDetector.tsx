@@ -29,8 +29,7 @@ export default function AIImageDetector() {
       const formData = new FormData();
       formData.append('image', file);
   
-      // TODO: Cambiar servidor de ejemplo
-      const response = await fetch('http://server/analyze-image', {
+      const response = await fetch('http://88.24.81.219:8080/upload', {
         method: 'POST',
         body: formData,
       });
