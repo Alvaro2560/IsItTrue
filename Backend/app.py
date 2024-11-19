@@ -50,7 +50,7 @@ def upload_file():
       
     app.logger.info(f"Archivo subido y guardado: \"{file.filename}\" Tamaño: {os.path.getsize(filePath)} bytes")
 
-    # Incluir predicción TODO: Cambiar por la predicción real
+    # Incluir predicción
     result = app.config['PREDICTOR'].predict('real')[0]
 
     os.remove(filePath)
