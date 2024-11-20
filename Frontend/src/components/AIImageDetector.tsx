@@ -163,7 +163,10 @@ export default function AIImageDetector() {
             <h3 className="results-title">AI Detection Result</h3>
             <div className="results-bar">
               <div
-                className="results-progress"
+                className={`results-progress ${
+                  //* Se puede ajustar el porcentaje según el resultado del modelo
+                  percentage < 33 ? 'low' : percentage < 66 ? 'medium' : 'high'
+                }`}
                 style={{ width: `${percentage}%` }}
               ></div>
             </div>
