@@ -119,8 +119,19 @@
 
 .results-progress {
   height: 100%;
-  background-color: hsl(var(--primary));
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.results-progress.low {
+  background-color: hsl(0, 74%, 43%);
+}
+
+.results-progress.medium {
+  background-color: hsl(30, 87%, 47%);
+}
+
+.results-progress.high {
+  background-color: hsl(120, 68%, 47%);
 }
 
 .results-text {
