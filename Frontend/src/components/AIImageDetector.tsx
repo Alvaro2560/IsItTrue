@@ -15,6 +15,7 @@ export default function AIImageDetector() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(localStorage.getItem('imageHistory') !== null);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('imageHistory');
@@ -38,7 +39,6 @@ export default function AIImageDetector() {
         throw new Error('Could not analyze the image. Please try again.');
       }
   
-      //* Se puede usar otro formato para la respuesta
       const data = await response.json();
       return data.percentage;
     } catch (error) {
@@ -58,11 +58,13 @@ export default function AIImageDetector() {
         const newPercentage = await analyzeImage(file);
         if (newPercentage === null) {
           alert('Could not analyze the image. Please try again.');
+          setIsLoading(false);
           return;
         }
 
         setPercentage(newPercentage);
         setIsLoading(false);
+        setIsHistoryVisible(true);
 
         const newHistoryItem: HistoryItem = {
           id: Date.now().toString(),
@@ -100,6 +102,12 @@ export default function AIImageDetector() {
   const handleSelectHistoryItem = (item: HistoryItem) => {
     setImage(item.image);
     setPercentage(item.percentage);
+  }
+
+  const handleClearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('imageHistory');
+    setIsHistoryVisible(false);
   }
 
   return (
@@ -164,10 +172,11 @@ export default function AIImageDetector() {
             </p>
           </div>
         )}
-        {!isLoading && (
+        {!isLoading && isHistoryVisible &&  (
           <HistoryDisplay
             history={history}
             onSelectHistoryItem={handleSelectHistoryItem}
+            onClearHistory={handleClearHistory}
           />
         )}
       </CardContent>
