@@ -50,3 +50,17 @@
   font-size: 0.875rem;
   font-weight: 600;
 }
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.clear-history-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espacio entre el ícono y el texto */
+  margin: 0; /* Resetea márgenes adicionales */
+}
