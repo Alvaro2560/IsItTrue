@@ -6,10 +6,10 @@ import tensorflow_addons as tfa
 import matplotlib.pyplot as plt
 
 # 128 -> test_accuracy: 0.9317
-# 256 -> test_accuracy: 0.9103
+# 512 -> test_accuracy: 0.8729
 
 # Configuración
-img_size = 128 # Tamaño a reescalar las imágenes (128x128 píxeles)
+img_size = 512 # Tamaño a reescalar las imágenes (128x128 píxeles)
 batch_size = 64 # Tamaño del lote de imágenes a procesar por el modelo en cada iteración
 num_classes = 2  # Número de clases a clasificar
 
@@ -24,7 +24,8 @@ train_data = image_dataset_from_directory(
   shuffle = True, # Mezclar las imágenes
   validation_split = 0.2, # Porcentaje de imágenes para usar en validación
   seed = 0, # Semilla para la aleatoriedad
-  subset = 'training' # Especificar si se trata de datos de entrenamiento
+  subset = 'training', # Especificar si se trata de datos de entrenamiento
+  interpolation = 'lanczos3'
 )
 
 # Cargar los datos de validación
@@ -38,7 +39,8 @@ val_data = image_dataset_from_directory(
   shuffle = True,
   validation_split = 0.2,
   seed = 0,
-  subset='validation' # Especificar si se trata de datos de validación
+  subset='validation', # Especificar si se trata de datos de validación
+  interpolation = 'lanczos3'
 )
 
 # Cargar los datos de prueba
@@ -49,7 +51,8 @@ test_data = image_dataset_from_directory(
   color_mode = 'rgb',
   batch_size = batch_size,
   image_size = (img_size, img_size),
-  shuffle = True
+  shuffle = True,
+  interpolation = 'lanczos3'
 )
 
 # Creación del modelo CNN

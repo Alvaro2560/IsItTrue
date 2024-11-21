@@ -31,6 +31,8 @@ UPLOAD_FOLDER = os.path.join(currentDir, 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 PREDICTOR = Predictor('model.h5', UPLOAD_FOLDER, 64)
 app.config['PREDICTOR'] = PREDICTOR
+VALID_FORMATS = ('.png', '.jpg', '.jpeg', '.gif', '.bmp')
+app.config['VALID_FORMATS'] = VALID_FORMATS
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -42,6 +44,10 @@ def upload_file():
   # Verificar si se subió un archivo
   if file.filename == '':
     return jsonify({'error': 'No selected image'}), 400
+  
+  # Verificar la extensión del archivo
+  if file.filename.endswith(VALID_FORMATS) == False:
+    return jsonify({'error': 'Invalid file extension'}), 400
   
   # Guardar el archivo
   if file:

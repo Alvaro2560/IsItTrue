@@ -4,7 +4,7 @@ from keras.utils import image_dataset_from_directory
 
 # Configuración
 MODEL_NAME = 'model.h5'
-img_size = 128  # Cambia a 32 o 64 según tus necesidades
+img_size = 512
 batch_size = 64
 
 # Preparación de los datos con aumento de datos
@@ -14,7 +14,8 @@ test_data = image_dataset_from_directory(
   color_mode = 'rgb',
   batch_size = batch_size,
   image_size = (img_size, img_size),
-  shuffle = False
+  shuffle = False,
+  interpolation = 'lanczos3'
 )
 
 # Cargar el modelo
