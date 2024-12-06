@@ -30,7 +30,7 @@ export default function AIImageDetector() {
       const formData = new FormData();
       formData.append('image', file);
   
-      const response = await fetch('http://88.24.81.219:8080/upload', {
+      const response = await fetch('/api/proxy', {
         method: 'POST',
         body: formData,
       });
