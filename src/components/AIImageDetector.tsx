@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { HistoryItem } from './HistoryDisplay';
 import HistoryDisplay from './HistoryDisplay';
+import imageCompression from 'browser-image-compression';
 import './AIImageDetector.css';
 
 export default function AIImageDetector() {
@@ -24,6 +25,22 @@ export default function AIImageDetector() {
       setHistory(parsedHistory)
     }
   }, []);
+
+  const compressImage = async (file: File): Promise<File> => {
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile;
+    } catch (error) {
+      console.error('Error comprimiendo la imagen:', error);
+      return file;
+    }
+  };
 
   const analyzeImage = async (file: File): Promise<number | null> => {
     try {
@@ -55,7 +72,9 @@ export default function AIImageDetector() {
         const newImage = e.target?.result as string;
         setImage(newImage);
   
-        const newPercentage = await analyzeImage(file);
+        const compressedFile = await compressImage(file);
+        const newPercentage = await analyzeImage(compressedFile);
+        
         if (newPercentage === null) {
           alert('Could not analyze the image. Please try again.');
           setIsLoading(false);
