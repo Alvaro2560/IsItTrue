@@ -66,6 +66,7 @@ export default function AIImageDetector() {
       console.error('Error:', error);
       return null;
     }
+    // Test
   };
 
   const renderPercentage = async (file: File | undefined) => {
