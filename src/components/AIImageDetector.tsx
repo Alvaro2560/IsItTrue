@@ -46,18 +46,16 @@ export default function AIImageDetector() {
     try {
       const formData = new FormData();
       formData.append('image', file);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
   
       const response = await fetch('/api/proxy', {
         method: 'POST',
         body: formData,
-        signal: controller.signal
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer some-token'
+        }
       });
 
-      clearTimeout(timeoutId);
-  
       if (!response.ok) {
         throw new Error('Could not analyze the image. Please try again.');
       }
