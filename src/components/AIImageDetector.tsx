@@ -46,11 +46,17 @@ export default function AIImageDetector() {
     try {
       const formData = new FormData();
       formData.append('image', file);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
   
       const response = await fetch('/api/proxy', {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
   
       if (!response.ok) {
         throw new Error('Could not analyze the image. Please try again.');
@@ -74,7 +80,7 @@ export default function AIImageDetector() {
   
         const compressedFile = await compressImage(file);
         const newPercentage = await analyzeImage(compressedFile);
-        
+
         if (newPercentage === null) {
           alert('Could not analyze the image. Please try again.');
           setIsLoading(false);
