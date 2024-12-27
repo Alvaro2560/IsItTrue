@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { HistoryItem } from './HistoryDisplay';
 import HistoryDisplay from './HistoryDisplay';
-import imageCompression from 'browser-image-compression';
 import './AIImageDetector.css';
 
 export default function AIImageDetector() {
@@ -26,34 +25,14 @@ export default function AIImageDetector() {
     }
   }, []);
 
-  const compressImage = async (file: File): Promise<File> => {
-    try {
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 800,
-        useWebWorker: true,
-      };
-
-      const compressedFile = await imageCompression(file, options);
-      return compressedFile;
-    } catch (error) {
-      console.error('Error comprimiendo la imagen:', error);
-      return file;
-    }
-  };
-
   const analyzeImage = async (file: File): Promise<number | null> => {
     try {
       const formData = new FormData();
       formData.append('image', file);
   
-      const response = await fetch('/api/proxy', {
+      const response = await fetch('http://88.24.84.103:8080/upload', {
         method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer some-token'
-        }
+        body: formData
       });
 
       if (!response.ok) {
@@ -66,7 +45,6 @@ export default function AIImageDetector() {
       console.error('Error:', error);
       return null;
     }
-    // Test
   };
 
   const renderPercentage = async (file: File | undefined) => {
@@ -77,8 +55,7 @@ export default function AIImageDetector() {
         const newImage = e.target?.result as string;
         setImage(newImage);
   
-        const compressedFile = await compressImage(file);
-        const newPercentage = await analyzeImage(compressedFile);
+        const newPercentage = await analyzeImage(file);
 
         if (newPercentage === null) {
           alert('Could not analyze the image. Please try again.');
