@@ -30,7 +30,7 @@ export default function AIImageDetector() {
       const formData = new FormData();
       formData.append('image', file);
   
-      const response = await fetch('https://proxy-steel-three.vercel.app/upload', {
+      const response = await fetch('https://proxy-psi-pearl-65.vercel.app/upload', {
         method: 'POST',
         body: formData
       });
