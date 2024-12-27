@@ -30,7 +30,7 @@ export default function AIImageDetector() {
       const formData = new FormData();
       formData.append('image', file);
   
-      const response = await fetch('http://88.24.84.103:8080/upload', {
+      const response = await fetch('https://proxy-tawny-beta.vercel.app/upload', {
         method: 'POST',
         body: formData
       });
